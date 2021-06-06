@@ -185,9 +185,7 @@ var Crustulum = {
                 if (!Crustulum.OG.gardenPlantsFree) {
                     Crustulum.OG.gardenPlantsFree = {};
                     Object.keys(Game.Objects['Farm'].minigame.plants).forEach((plantName) => {
-                        let plant = Game.Objects['Farm'].minigame.plants[plantName];
-                        Crustulum.OG.gardenPlantsFree[plantName] = plant.costM;
-                        Object.defineProperty(plant, 'costM', {get:()=>{return (Crustulum.getConfig('freePlants')?0:Crustulum.OG.gardenPlantsFree[plantName])},configurable: true});
+                        Game.Objects['Farm'].minigame.plants[plantName].costM(get:()=>{return (Crustulum.getConfig('freePlants')?0:Crustulum.OG.gardenPlantsFree[plantName])},configurable: true);
                     });
                 }
 

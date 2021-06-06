@@ -14,7 +14,6 @@ var Crustulum = {
                 fragment.appendChild(Crustulum.Menu.toggleButton('infiniteSwaps','Infinite Swaps','Causes your Pantheon swaps to regenerate almost instantly.'));
                 fragment.appendChild(Crustulum.Menu.toggleButton('miracleSpells','Miracle Spell™','Grimoire spells will never fail.'));
                 fragment.appendChild(Crustulum.Menu.toggleButton('immortalPlants','Make Plants Immortal','Makes it so plants never wither.'));
-                fragment.appendChild(Crustulum.Menu.toggleButton('freePlants','Make Plants Free','Makes it so plants are free.'));
                 fragment.appendChild(Crustulum.Menu.toggleButton('neverWeeds','Never Weed™','Makes it so weeds never spawn on their own. You can still plant them and they still may spread.'));
                 fragment.appendChild(Crustulum.Menu.heading('Crustulum Actions'));
                 // Unload Crustulum button. Doesn't work if you loaded other add-ons first. We check only for Cookie Monster.
@@ -45,7 +44,6 @@ var Crustulum = {
         'infiniteSwaps': false,
         'miracleSpells': false,
         'immortalPlants': false,
-        'freePlants': false,
         'neverWeeds': false,
     },
     Config: {}, // User settings
@@ -142,11 +140,6 @@ var Crustulum = {
                     Object.defineProperty(plant, 'immortal', {value:Crustulum.OG.gardenPlantsMortality[plantName],configurable: true});
                 });
 
-                if (Crustulum.OG.gardenPlantsFree) Object.keys(Game.Objects['Farm'].minigame.plants).forEach((plantName) => {
-                    let plant = Game.Objects['Farm'].minigame.plants[plantName];
-                    Object.defineProperty(plant, 'costM', {value:Crustulum.OG.gardenPlantsFree[plantName],configurable: true});
-                });
-
                 if (Crustulum.OG.gardenSoilWeed) Object.keys(Game.Objects['Farm'].minigame.soils).forEach((soilName) => {
                     let soil = Game.Objects['Farm'].minigame.soils[soilName];
                     Object.defineProperty(soil, 'weedMult', {value:Crustulum.OG.gardenSoilWeed[soilName],configurable: true});
@@ -179,13 +172,6 @@ var Crustulum = {
                         let plant = Game.Objects['Farm'].minigame.plants[plantName];
                         Crustulum.OG.gardenPlantsMortality[plantName] = plant.immortal;
                         Object.defineProperty(plant, 'immortal', {get:()=>{return (Crustulum.getConfig('immortalPlants')?true:Crustulum.OG.gardenPlantsMortality[plantName])},configurable: true});
-                    });
-                }
-
-                if (!Crustulum.OG.gardenPlantsFree) {
-                    Crustulum.OG.gardenPlantsFree = {};
-                    Object.keys(Game.Objects['Farm'].minigame.plants).forEach((plantName) => {
-                        Game.Objects['Farm'].minigame.plants[plantName].costM(get:()=>{return (Crustulum.getConfig('freePlants')?0:Crustulum.OG.gardenPlantsFree[plantName])},configurable: true);
                     });
                 }
 

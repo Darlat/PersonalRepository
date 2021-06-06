@@ -12,10 +12,12 @@ var Crustulum = {
                 let fragment = document.createDocumentFragment();
                 fragment.appendChild(Crustulum.Menu.heading('Crustulum Toggleables'));
                 fragment.appendChild(Crustulum.Menu.subheading('Mini-game Enhancers'));
+                fragment.appendChild(Crustulum.Menu.toggleButton('infiniteSwaps','Infinite Swaps','Causes your Pantheon swaps to regenerate almost instantly.'));
                 fragment.appendChild(Crustulum.Menu.toggleButton('miracleSpells','Miracle Spell™','Grimoire spells will never fail.'));
                 fragment.appendChild(Crustulum.Menu.toggleButton('immortalPlants','Make Plants Immortal','Makes it so plants never wither. Does not affect weeds or fungi.'));
                 fragment.appendChild(Crustulum.Menu.toggleButton('neverWeeds','Never Weed™','Makes it so weeds never spawn on their own. You can still plant them and they still may spread.'));
                 fragment.appendChild(Crustulum.Menu.heading('Crustulum Actions'));
+                fragment.appendChild(Crustulum.Menu.subheading('Misc'));
                 // Unload Crustulum button. Doesn't work if you loaded other add-ons first. We check only for Cookie Monster.
                 if (typeof CM === 'undefined' || Crustulum.cookieMonsterLoaded) fragment.appendChild(Crustulum.Menu.actionButton('unloadCrustulum','Unload Crustulum','Unloads Crustulum and disabled all of it\'s features.', Crustulum.Actions.unloadCrustulum));
 
@@ -27,6 +29,13 @@ var Crustulum = {
     },
     Actions: { // Our action library
         unloadCrustulum: ()=>{
+            Object.keys(Crustulum.ticks).forEach((tickThis) => {
+                let tick = Crustulum.ticks[tickThis];
+                if (tick.intervalId) {
+                    clearInterval(tick.intervalId);
+                    tick.intervalId = 0;
+                }
+            });
             Crustulum.Liberate.Game();
             Crustulum.PluginHooks.UnloadPlugins();
             Game.UpdateMenu();
@@ -34,6 +43,7 @@ var Crustulum = {
         },
     },
     ConfigDefaults: { // The default value for the configs
+        'infiniteSwaps': false,
         'immortalPlants': false,
         'neverWeeds': false,
         'miracleSpells': false,
@@ -46,6 +56,7 @@ var Crustulum = {
         }
         Crustulum.Hijack.Game();
         Crustulum.loadConfig();
+        Crustulum.initTicks();
         Game.Win('Third-party');
         if (typeof CM === 'object' && typeof Queue !== 'undefined' && typeof jscolor !== 'undefined') Crustulum.cookieMonsterLoaded = true;
         Crustulum.PluginHooks.Init();
@@ -127,9 +138,6 @@ var Crustulum = {
     Liberate: {
         Game: () => {
             if (Crustulum.OG.UpdateMenu) Game.UpdateMenu = Crustulum.OG.UpdateMenu;
-            if (Crustulum.OG.shimmerPrototypeInit) Game.shimmer.prototype.init = function() {
-                Game.shimmerTypes[this.type].initFunc(this);
-            };
             Crustulum.Liberate.miniGames();
         },
         miniGames: () => {
@@ -154,17 +162,6 @@ var Crustulum = {
             if (!Crustulum.OG.UpdateMenu) {
                 Crustulum.OG.UpdateMenu = Game.UpdateMenu;
                 Game.UpdateMenu = Crustulum.Game.UpdateMenu;
-            }
-            if (!Crustulum.OG.shimmerPrototypeInit) {
-                Crustulum.OG.shimmerPrototypeInit = true;
-                Game.shimmer.prototype.init = function() {
-                    if (Crustulum.getConfig('blockWrath')) {
-                        this.forceObj = {'noWrath':true};
-                        Game.shimmerTypes[this.type].initFunc(this);
-                    } else {
-                        Game.shimmerTypes[this.type].initFunc(this);
-                    }
-                }
             }
         
             Crustulum.Hijack.miniGames();
@@ -207,6 +204,25 @@ var Crustulum = {
             }
         
             if (retry) setTimeout(Crustulum.Hijack.miniGames, 1000);
+        },
+    },
+    initTicks: () => {
+        Object.keys(Crustulum.ticks).forEach((tickThis) => {
+            let tick = Crustulum.ticks[tickThis];
+            if (!tick.intervalId) tick.intervalId = setInterval(tick.onTick, tick.rate);
+        });
+    },
+    ticks: {
+        'infiniteSwaps': {
+            'intervalId': null,
+            'rate': 1000,
+            'onTick': ()=>{
+                if (!Crustulum.getConfig('infiniteSwaps')) return;
+                if(!Game.Objects['Temple'].minigameLoaded || !Game.Objects['Temple'].minigame.gods) return;
+                Game.Objects['Temple'].minigame.swaps=3;
+                Game.Objects['Temple'].minigame.swapT=Date.now();
+                Game.Objects['Temple'].minigame.lastSwapT=0;
+            },
         },
     },
     PluginHooks: {

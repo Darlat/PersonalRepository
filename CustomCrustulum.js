@@ -172,8 +172,8 @@ var Crustulum = {
 						let plant = Game.Objects['Farm'].minigame.plants[plantName];
 						Crustulum.OG.gardenPlantsMortality[plantName] = plant.immortal;
 						Object.defineProperty(plant, 'immortal', {get:()=>{return (Crustulum.getConfig('immortalPlants')?true:Crustulum.OG.gardenPlantsMortality[plantName])},configurable: true});
-						Game.Objects['Farm'].minigame.plants[plantName].CostM=0;
-						Game.Objects['Farm'].minigame.plants[plantName].Mature=0.1;
+						Object.defineProperty(plant, 'CostM', {get:()=>{return (Crustulum.getConfig('immortalPlants')?0:Crustulum.OG.gardenPlantsMortality[plantName])},configurable: true});
+						Object.defineProperty(plant, 'Mature', {get:()=>{return (Crustulum.getConfig('immortalPlants')?0.1:Crustulum.OG.gardenPlantsMortality[plantName])},configurable: true});
 					});
 				}
 

@@ -143,6 +143,10 @@ var Crustulum = {
 				if (Crustulum.OG.gardenSoilWeed) Object.keys(Game.Objects['Farm'].minigame.soils).forEach((soilName) => {
 					let soil = Game.Objects['Farm'].minigame.soils[soilName];
 					Object.defineProperty(soil, 'weedMult', {value:Crustulum.OG.gardenSoilWeed[soilName],configurable: true});
+				});
+
+				if (Crustulum.OG.gardenSoilTick) Object.keys(Game.Objects['Farm'].minigame.soils).forEach((soilName) => {
+					let soil = Game.Objects['Farm'].minigame.soils[soilName];
 					Object.defineProperty(soil, 'tick', {value:Crustulum.OG.gardenSoilTick[soilName],configurable: true});
 				});
 			}
@@ -181,8 +185,15 @@ var Crustulum = {
 					Object.keys(Game.Objects['Farm'].minigame.soils).forEach((soilName) => {
 						let soil = Game.Objects['Farm'].minigame.soils[soilName];
 						Crustulum.OG.gardenSoilWeed[soilName] = soil.weedMult;
-						Crustulum.OG.gardenSoilTick[soilName] = soil.tick;
 						Object.defineProperty(soil, 'weedMult',{get:()=>{return (Crustulum.getConfig('neverWeeds')?0:Crustulum.OG.gardenSoilWeed[soilName])},configurable: true});
+					});
+				}
+
+				if (!Crustulum.OG.gardenSoilTick) {
+					Crustulum.OG.gardenSoilTick = {};
+					Object.keys(Game.Objects['Farm'].minigame.soils).forEach((soilName) => {
+						let soil = Game.Objects['Farm'].minigame.soils[soilName];
+						Crustulum.OG.gardenSoilTick[soilName] = soil.tick;
 						Object.defineProperty(soil, 'tick',{get:()=>{return (Crustulum.getConfig('neverWeeds')?0.01:Crustulum.OG.gardenSoilTick[soilName])},configurable: true});
 					});
 				}

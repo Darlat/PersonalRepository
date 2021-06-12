@@ -143,6 +143,7 @@ var Crustulum = {
 				if (Crustulum.OG.gardenSoilWeed) Object.keys(Game.Objects['Farm'].minigame.soils).forEach((soilName) => {
 					let soil = Game.Objects['Farm'].minigame.soils[soilName];
 					Object.defineProperty(soil, 'weedMult', {value:Crustulum.OG.gardenSoilWeed[soilName],configurable: true});
+					Object.defineProperty(soil, 'tick', {value:Crustulum.OG.gardenSoilTick[soilName],configurable: true});
 				});
 			}
 			if(Game.Objects['Wizard tower'].minigameLoaded && Game.Objects['Wizard tower'].minigame.getFailChance) {

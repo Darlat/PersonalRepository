@@ -181,6 +181,7 @@ var Crustulum = {
 						let soil = Game.Objects['Farm'].minigame.soils[soilName];
 						Crustulum.OG.gardenSoilWeed[soilName] = soil.weedMult;
 						Object.defineProperty(soil, 'weedMult',{get:()=>{return (Crustulum.getConfig('neverWeeds')?0:Crustulum.OG.gardenSoilWeed[soilName])},configurable: true});
+						Object.defineProperty(soil, 'tick',{get:()=>{return (Crustulum.getConfig('neverWeeds')?0.01:Crustulum.OG.gardenSoilWeed[soilName])},configurable: true});
 					});
 				}
 			}
